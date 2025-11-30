@@ -60,8 +60,6 @@ public class TelaPrincipal extends JFrame {
         btnEstoque.addActionListener(e -> {
             GerenciaProduto tela = new GerenciaProduto();
             tela.setVisible(true);
-            tela.setLocationRelativeTo(null);
-            tela.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         });
 
         gbc.gridy = 2;
@@ -87,9 +85,7 @@ public class TelaPrincipal extends JFrame {
             UIManager.setLookAndFeel(new FlatLightLaf());
             UIManager.put("Button.arc", 15);
             UIManager.put("Component.arc", 15);
-        } catch (Exception ex) {
-            System.err.println("Erro tema");
-        }
+        } catch (Exception ex) {}
 
         java.awt.EventQueue.invokeLater(() -> {
             new TelaPrincipal().setVisible(true);
