@@ -1,119 +1,132 @@
 package View;
 
+import DAO.ProdutoDAO;
+import Model.Produto;
 import com.formdev.flatlaf.FlatLightLaf;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JTextField;
 import javax.swing.UIManager;
 
-public class TelaCadastro extends javax.swing.JFrame {
+public class TelaCadastro extends JFrame {
     
+    private JTextField txtNome;
+    private JTextField txtDescricao;
+    private JTextField txtPreco;
+    private JTextField txtQuantidade;
+
     public TelaCadastro() {
         initComponents();
-        setLocationRelativeTo(null);
+        configurarJanela();
     }
 
-    @SuppressWarnings("unchecked")
-    private void initComponents() {
-
-        jLabel1 = new javax.swing.JLabel();
-        jLabel2 = new javax.swing.JLabel();
-        jLabel3 = new javax.swing.JLabel();
-        jLabel4 = new javax.swing.JLabel();
-        jLabel5 = new javax.swing.JLabel();
-        jLabel6 = new javax.swing.JLabel();
-        txtNome = new javax.swing.JTextField();
-        txtDescricao = new javax.swing.JTextField();
-        txtPreco = new javax.swing.JTextField();
-        txtQuantidade = new javax.swing.JTextField();
-        btnSalvar = new javax.swing.JButton();
-
-        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+    private void configurarJanela() {
         setTitle("Cadastro de Produtos");
+        setSize(600, 500);
+        setLocationRelativeTo(null);
+        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+    }
 
-        jLabel1.setText("Nome");
-        jLabel2.setText("Descrição");
-        jLabel3.setText("Preço");
-        jLabel4.setText("Quantidade");
-        jLabel6.setFont(new java.awt.Font("Segoe UI", 1, 18)); 
-        jLabel6.setText("Novo Produto");
+    private void initComponents() {
+        setLayout(new GridBagLayout());
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(8, 10, 8, 10);
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.gridx = 0;
 
-        btnSalvar.setText("Salvar");
-        btnSalvar.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                // Aqui você chamará o DAO para salvar
+        JLabel lblTitulo = new JLabel("Novo Produto");
+        lblTitulo.setFont(new Font("Segoe UI", Font.BOLD, 24));
+        lblTitulo.setHorizontalAlignment(JLabel.CENTER);
+        gbc.gridy = 0;
+        gbc.gridwidth = 2;
+        gbc.insets = new Insets(10, 10, 30, 10);
+        add(lblTitulo, gbc);
+
+        gbc.gridwidth = 1;
+        gbc.insets = new Insets(8, 10, 8, 10);
+
+        addLabel("Nome:", 1, gbc);
+        txtNome = addTextField(1, gbc);
+
+        addLabel("Descrição:", 2, gbc);
+        txtDescricao = addTextField(2, gbc);
+
+        addLabel("Preço (R$):", 3, gbc);
+        txtPreco = addTextField(3, gbc);
+
+        addLabel("Quantidade:", 4, gbc);
+        txtQuantidade = addTextField(4, gbc);
+
+        JButton btnSalvar = new JButton("Salvar Produto");
+        btnSalvar.setPreferredSize(new Dimension(200, 45));
+        btnSalvar.setFont(new Font("Segoe UI", Font.BOLD, 14));
+        btnSalvar.addActionListener(e -> salvarProduto());
+        
+        gbc.gridy = 5;
+        gbc.gridx = 0;
+        gbc.gridwidth = 2;
+        gbc.insets = new Insets(30, 10, 10, 10);
+        add(btnSalvar, gbc);
+    }
+
+    private void addLabel(String texto, int y, GridBagConstraints gbc) {
+        JLabel label = new JLabel(texto);
+        label.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+        gbc.gridy = y;
+        gbc.gridx = 0;
+        gbc.weightx = 0.3;
+        add(label, gbc);
+    }
+
+    private JTextField addTextField(int y, GridBagConstraints gbc) {
+        JTextField field = new JTextField();
+        field.setPreferredSize(new Dimension(300, 35));
+        gbc.gridy = y;
+        gbc.gridx = 1;
+        gbc.weightx = 0.7;
+        add(field, gbc);
+        return field;
+    }
+
+    private void salvarProduto() {
+        try {
+            String nome = txtNome.getText();
+            String desc = txtDescricao.getText();
+            double preco = Double.parseDouble(txtPreco.getText().replace(",", "."));
+            int qtd = Integer.parseInt(txtQuantidade.getText());
+
+            if (nome.isEmpty() || desc.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Preencha todos os campos!");
+                return;
             }
-        });
 
-        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
-        getContentPane().setLayout(layout);
-        layout.setHorizontalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addGap(20, 20, 20)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel6)
-                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                        .addComponent(jLabel1)
-                        .addComponent(txtNome)
-                        .addComponent(jLabel2)
-                        .addComponent(txtDescricao)
-                        .addGroup(layout.createSequentialGroup()
-                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                .addComponent(jLabel3)
-                                .addComponent(txtPreco, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addGap(18, 18, 18)
-                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                .addComponent(jLabel4)
-                                .addComponent(txtQuantidade, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                        .addComponent(btnSalvar, javax.swing.GroupLayout.DEFAULT_SIZE, 220, Short.MAX_VALUE)))
-                .addContainerGap(20, Short.MAX_VALUE))
-        );
-        layout.setVerticalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addGap(20, 20, 20)
-                .addComponent(jLabel6)
-                .addGap(18, 18, 18)
-                .addComponent(jLabel1)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(txtNome, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jLabel2)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(txtDescricao, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel3)
-                    .addComponent(jLabel4))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(txtPreco, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(txtQuantidade, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(26, 26, 26)
-                .addComponent(btnSalvar, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(20, Short.MAX_VALUE))
-        );
+            Produto p = new Produto(-1, nome, desc, qtd, preco);
+            ProdutoDAO dao = new ProdutoDAO();
+            
+            if (dao.InsertProdutoBD(p)) {
+                JOptionPane.showMessageDialog(this, "Produto salvo com sucesso!");
+                dispose(); 
+            } else {
+                JOptionPane.showMessageDialog(this, "Erro ao salvar.");
+            }
 
-        pack();
+        } catch (NumberFormatException e) {
+            JOptionPane.showMessageDialog(this, "Verifique os números (Preço e Quantidade).");
+        }
     }
 
     public static void main(String args[]) {
         try {
             UIManager.setLookAndFeel(new FlatLightLaf());
-        } catch (Exception ex) {
-            System.err.println("Erro ao carregar tema");
-        }
-
+        } catch (Exception ex) { }
+        
         java.awt.EventQueue.invokeLater(() -> new TelaCadastro().setVisible(true));
     }
-
-    private javax.swing.JButton btnSalvar;
-    private javax.swing.JLabel jLabel1;
-    private javax.swing.JLabel jLabel2;
-    private javax.swing.JLabel jLabel3;
-    private javax.swing.JLabel jLabel4;
-    private javax.swing.JLabel jLabel5;
-    private javax.swing.JLabel jLabel6;
-    private javax.swing.JTextField txtDescricao;
-    private javax.swing.JTextField txtNome;
-    private javax.swing.JTextField txtPreco;
-    private javax.swing.JTextField txtQuantidade;
 }
