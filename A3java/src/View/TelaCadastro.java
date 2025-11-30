@@ -21,27 +21,41 @@ public class TelaCadastro extends JFrame {
     private JTextField txtDescricao;
     private JTextField txtPreco;
     private JTextField txtQuantidade;
+    private int idProduto = -1; 
 
     public TelaCadastro() {
-        initComponents();
+        initComponents("Novo Produto");
         configurarJanela();
     }
 
+    public TelaCadastro(Produto p) {
+        initComponents("Editar Produto");
+        configurarJanela();
+        preencherDados(p);
+    }
+
     private void configurarJanela() {
-        setTitle("Cadastro de Produtos");
         setSize(600, 500);
         setLocationRelativeTo(null);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
     }
 
-    private void initComponents() {
+    private void preencherDados(Produto p) {
+        this.idProduto = p.getId();
+        txtNome.setText(p.getNome());
+        txtDescricao.setText(p.getDescricao());
+        txtPreco.setText(String.valueOf(p.getPreco()).replace(".", ","));
+        txtQuantidade.setText(String.valueOf(p.getQuantidade()));
+    }
+
+    private void initComponents(String titulo) {
         setLayout(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(8, 10, 8, 10);
         gbc.fill = GridBagConstraints.HORIZONTAL;
         gbc.gridx = 0;
 
-        JLabel lblTitulo = new JLabel("Novo Produto");
+        JLabel lblTitulo = new JLabel(titulo);
         lblTitulo.setFont(new Font("Segoe UI", Font.BOLD, 24));
         lblTitulo.setHorizontalAlignment(JLabel.CENTER);
         gbc.gridy = 0;
@@ -64,7 +78,7 @@ public class TelaCadastro extends JFrame {
         addLabel("Quantidade:", 4, gbc);
         txtQuantidade = addTextField(4, gbc);
 
-        JButton btnSalvar = new JButton("Salvar Produto");
+        JButton btnSalvar = new JButton("Salvar");
         btnSalvar.setPreferredSize(new Dimension(200, 45));
         btnSalvar.setFont(new Font("Segoe UI", Font.BOLD, 14));
         btnSalvar.addActionListener(e -> salvarProduto());
@@ -107,11 +121,18 @@ public class TelaCadastro extends JFrame {
                 return;
             }
 
-            Produto p = new Produto(-1, nome, desc, qtd, preco);
+            Produto p = new Produto(idProduto, nome, desc, qtd, preco);
             ProdutoDAO dao = new ProdutoDAO();
             
-            if (dao.InsertProdutoBD(p)) {
-                JOptionPane.showMessageDialog(this, "Produto salvo com sucesso!");
+            boolean sucesso;
+            if (idProduto == -1) {
+                sucesso = dao.InsertProdutoBD(p);
+            } else {
+                sucesso = dao.UpdateProdutoBD(p);
+            }
+
+            if (sucesso) {
+                JOptionPane.showMessageDialog(this, "Sucesso!");
                 dispose(); 
             }
         } catch (NumberFormatException e) {
@@ -120,9 +141,7 @@ public class TelaCadastro extends JFrame {
     }
 
     public static void main(String args[]) {
-        try {
-            UIManager.setLookAndFeel(new FlatLightLaf());
-        } catch (Exception ex) { }
+        try { UIManager.setLookAndFeel(new FlatLightLaf()); } catch (Exception ex) { }
         java.awt.EventQueue.invokeLater(() -> new TelaCadastro().setVisible(true));
     }
 }
