@@ -6,9 +6,12 @@ import com.formdev.flatlaf.FlatLightLaf;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Font;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
@@ -32,9 +35,9 @@ public class GerenciaProduto extends JFrame {
         setLayout(new BorderLayout());
 
         JPanel panelTopo = new JPanel();
-        panelTopo.setBackground(new Color(240, 240, 240));
-        JLabel titulo = new JLabel("Lista de Produtos");
-        titulo.setFont(new Font("Segoe UI", Font.BOLD, 24));
+        panelTopo.setBackground(new Color(245, 245, 245));
+        JLabel titulo = new JLabel("Controle de Produtos");
+        titulo.setFont(new Font("Segoe UI", Font.BOLD, 22));
         panelTopo.add(titulo);
         add(panelTopo, BorderLayout.NORTH);
 
@@ -57,11 +60,28 @@ public class GerenciaProduto extends JFrame {
         add(scroll, BorderLayout.CENTER);
 
         JPanel panelBotoes = new JPanel();
-        JButton btnAtualizar = new JButton("Atualizar Lista");
-        btnAtualizar.setFont(new Font("Segoe UI", Font.PLAIN, 14));
-        btnAtualizar.addActionListener(e -> carregarDados());
         
+        JButton btnNovo = new JButton("Novo");
+        JButton btnEditar = new JButton("Editar");
+        JButton btnExcluir = new JButton("Excluir");
+        JButton btnAtualizar = new JButton("Atualizar Lista");
+
+        Font btnFont = new Font("Segoe UI", Font.PLAIN, 14);
+        btnNovo.setFont(btnFont);
+        btnEditar.setFont(btnFont);
+        btnExcluir.setFont(btnFont);
+        btnAtualizar.setFont(btnFont);
+
+        btnNovo.addActionListener(e -> abrirTelaCadastro(null));
+        btnEditar.addActionListener(e -> editarProduto());
+        btnExcluir.addActionListener(e -> excluirProduto());
+        btnAtualizar.addActionListener(e -> carregarDados());
+
+        panelBotoes.add(btnNovo);
+        panelBotoes.add(btnEditar);
+        panelBotoes.add(btnExcluir);
         panelBotoes.add(btnAtualizar);
+        
         add(panelBotoes, BorderLayout.SOUTH);
     }
 
@@ -81,10 +101,60 @@ public class GerenciaProduto extends JFrame {
         }
     }
 
+    private void excluirProduto() {
+        int linha = tabela.getSelectedRow();
+        if (linha == -1) {
+            JOptionPane.showMessageDialog(this, "Selecione um produto para excluir.");
+            return;
+        }
+
+        int id = (int) tabela.getValueAt(linha, 0);
+        int confirm = JOptionPane.showConfirmDialog(this, "Tem certeza que deseja excluir?", "Excluir", JOptionPane.YES_NO_OPTION);
+        
+        if (confirm == JOptionPane.YES_OPTION) {
+            ProdutoDAO dao = new ProdutoDAO();
+            if (dao.DeleteProdutoBD(id)) {
+                carregarDados();
+            }
+        }
+    }
+
+    private void editarProduto() {
+        int linha = tabela.getSelectedRow();
+        if (linha == -1) {
+            JOptionPane.showMessageDialog(this, "Selecione um produto para editar.");
+            return;
+        }
+        int id = (int) tabela.getValueAt(linha, 0);
+        ProdutoDAO dao = new ProdutoDAO();
+        Produto p = dao.carregaProduto(id);
+        
+        if (p != null) {
+            abrirTelaCadastro(p);
+        }
+    }
+
+    private void abrirTelaCadastro(Produto p) {
+        TelaCadastro tela;
+        if (p == null) {
+            tela = new TelaCadastro();
+        } else {
+            tela = new TelaCadastro(p);
+        }
+        
+        // Atualiza a tabela quando a janela de cadastro fechar
+        tela.addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosed(WindowEvent e) {
+                carregarDados();
+            }
+        });
+        
+        tela.setVisible(true);
+    }
+
     public static void main(String args[]) {
-        try {
-            UIManager.setLookAndFeel(new FlatLightLaf());
-        } catch (Exception ex) {}
+        try { UIManager.setLookAndFeel(new FlatLightLaf()); } catch (Exception ex) {}
         java.awt.EventQueue.invokeLater(() -> new GerenciaProduto().setVisible(true));
     }
 }
