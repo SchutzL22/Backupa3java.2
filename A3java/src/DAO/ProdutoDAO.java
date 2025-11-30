@@ -22,10 +22,10 @@ public class ProdutoDAO {
             Class.forName(driver);
             
             String server = "localhost";
-            String database = "estoqueprodutos"; 
+            String database = "stock404"; 
             String url = "jdbc:mysql://" + server + ":3306/" + database + "?useTimezone=true&serverTimezone=UTC";
             String user = "root";
-            String password = "2601";
+            String password = "2601"; 
 
             return DriverManager.getConnection(url, user, password);
 
