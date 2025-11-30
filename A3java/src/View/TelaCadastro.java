@@ -113,10 +113,7 @@ public class TelaCadastro extends JFrame {
             if (dao.InsertProdutoBD(p)) {
                 JOptionPane.showMessageDialog(this, "Produto salvo com sucesso!");
                 dispose(); 
-            } else {
-                JOptionPane.showMessageDialog(this, "Erro ao salvar.");
             }
-
         } catch (NumberFormatException e) {
             JOptionPane.showMessageDialog(this, "Verifique os números (Preço e Quantidade).");
         }
@@ -126,7 +123,6 @@ public class TelaCadastro extends JFrame {
         try {
             UIManager.setLookAndFeel(new FlatLightLaf());
         } catch (Exception ex) { }
-        
         java.awt.EventQueue.invokeLater(() -> new TelaCadastro().setVisible(true));
     }
 }
